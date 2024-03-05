@@ -40,10 +40,10 @@ class OrderFood : Order {
     private val orderData = listOf(
 
         OrderDetail(
-            orderType = "Take Away"
+            orderType = DeliveryType.TAKE_AWAY
         ),
         OrderDetail(
-            orderType = "Delivery"
+            orderType = DeliveryType.DINE_IN
         )
     )
 
@@ -66,8 +66,8 @@ class OrderFood : Order {
         selectedIndex?.let {
             if (selectedIndex in 1..foodData.size) {
                 selectFood = foodData[selectedIndex - 1]
-                println("Kamu memilih : ${selectFood!!.foodName} ")
-                println("Harga : Rp ${selectFood!!.foodPrice} ")
+                println("Kamu memilih : ${selectFood?.foodName} ")
+                println("Harga : Rp ${selectFood?.foodPrice} ")
             } else {
                 println("Pilihan anda salah, Silahkan coba lagi")
                 getSelectedFood()
@@ -83,14 +83,18 @@ class OrderFood : Order {
     fun calculatedOrder() {
         println("============================")
         println("Masukkan Pembayaran")
-        val yourMoney = readln().toInt()
-        return if (yourMoney < selectFood!!.foodPrice) {
-            println("Maaf, pembayaran Anda gagal!")
+        try {
+            val yourMoney = readLine()?.toInt() ?: throw NumberFormatException("Invalid input")
+            val selectedFoodPrice = selectFood?.foodPrice ?: 0
+            if (yourMoney < selectedFoodPrice) {
+                println("Maaf, pembayaran Anda kurang!")
+                calculatedOrder()
+            } else {
+                println("Terima kasih, Anda berhasil memesan makanan")
+            }
+        } catch (e: NumberFormatException) {
+            println("Input Anda salah! Harap masukkan angka.")
             calculatedOrder()
-        } else if (yourMoney > selectFood!!.foodPrice) {
-            println("Terima kasih, Anda berhasil memesan makanan")
-        } else {
-            println("Terima kasih, Anda berhasil memesan makanan")
         }
     }
 
@@ -109,7 +113,7 @@ class OrderFood : Order {
         selectedIndex?.let {
             if (selectedIndex in 1..orderData.size) {
                 selectOrderType = orderData[selectedIndex - 1]
-                println("Kamu memilih : ${selectOrderType!!.orderType} ")
+                println("Kamu memilih : ${selectOrderType?.orderType} ")
             } else {
                 println("Pilihan anda salah, Silahkan coba lagi")
                 getSelectedOrderType()
@@ -122,7 +126,7 @@ class OrderFood : Order {
 
     //Display Result order type
     fun orderTimeProcess() {
-        if (selectOrderType!!.orderType == "Take Away") {
+        if (selectOrderType?.orderType == DeliveryType.TAKE_AWAY) {
             println("Makananmu sedang dimasak")
             Thread.sleep(5000)
             println("Makananmu sudah siap! Silakan ambil di resto ya!")
@@ -139,6 +143,10 @@ class OrderFood : Order {
         }
     }
 
+}
+
+enum class DeliveryType{
+    TAKE_AWAY, DINE_IN
 }
 
 
